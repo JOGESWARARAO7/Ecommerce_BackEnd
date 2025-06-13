@@ -8,16 +8,22 @@ services:
     environment:
       MYSQL_DATABASE: joydb
       MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_PASSWORD: 12345
       MYSQL_ROOT_PASSWORD: 12345
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   joyapp:
     build: .
     container_name: joy-backend
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
